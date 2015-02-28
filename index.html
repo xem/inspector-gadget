@@ -1,0 +1,102 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>IG</title>
+<h1>Inspector gadget</h1>
+URL:
+<input type=url id=url value="http://example.com">
+<button id=submit>Load</button> - <button id=showsource>Show source (Ctrl)</button>
+<br>
+Width:
+<input type=range id=widthrange min=0 max=2000 step=50 value=600>
+<input type=number id=width step=50 value=600>
+<br>
+Height:
+<input type=range id=heightrange min=0 max=2000 step=50 value=400>
+<input type=number id=height step=50 value=400>
+<br>
+<iframe id=iframe width=600 height=400></iframe>
+<div id=source></div>
+<style>
+body {
+  text-align: center;
+  font-family: arial;
+  padding-bottom: 30%;
+}
+
+#source {
+  position: fixed;
+  font-family: courier;
+  white-space: pre;
+  text-align: left;
+  overflow: auto;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  padding: 20px;
+  background: rgba(200,200,200,0.8);
+  display: none;
+}
+</style>
+<script>
+
+// Load an URL
+submit.onclick = function(){
+  
+  // In the iframe
+  iframe.src = url.value;
+  
+  // In the source panel (in AJAX)
+  xhr = new XMLHttpRequest;
+  xhr.open('GET', url.value, false); 
+  xhr.send(null);
+  if(xhr.status == 200){
+    source.innerHTML = xhr.responseText.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  }
+}
+
+// Toggle source
+sourcevisible = 0;
+
+showsource.onclick = function(){
+  sourcevisible = 1 - sourcevisible;
+  source.style.display = ["none", "block"][sourcevisible];
+}
+
+// Press ctrl to view source
+onkeydown = function(e){
+  if(e.keyCode == 17){
+    showsource.onclick();
+  }
+}
+
+// Ensure size inputs are reset after F5
+widthrange.value = width.value = 600;
+heightrange.value = height.value = 400;
+
+// Change width
+widthrange.oninput =
+widthrange.onchange = function(){
+  width.value = widthrange.value;
+  iframe.width = width.value;
+}
+
+width.oninput =
+width.onchange = function(){
+  widthrange.value = width.value;
+  iframe.width = width.value;
+}
+
+// Change height
+heightrange.oninput =
+heightrange.onchange = function(){
+  height.value = heightrange.value;
+  iframe.height = height.value;
+}
+
+height.oninput =
+height.onchange = function(){
+  heightrange.value = height.value;
+  iframe.height = height.value;
+}
+</script>
